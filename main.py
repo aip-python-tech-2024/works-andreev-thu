@@ -1,4 +1,3 @@
-import json
 import requests
 import telebot
 import dotenv
@@ -14,6 +13,20 @@ def send_welcome(message):
     bot.reply_to(message, "Howdy, how are you doing?")
 
 
+@bot.message_handler(commands=['pokemon'])
+def get_pokemon(message):
+    print(message.text)
+    pokemon_name = message.text.split()[1]
+    url = f'https://pokeapi.co/api/v2/pokemon/{pokemon_name}'
+    data = requests.get(url).json()
+
+    reply = (f'Pokemon name: {data["name"]}\n'
+             f'Weight: {data["weight"]}\n'
+             f'Height: {data["height"]}')
+
+    bot.reply_to(message, reply)
+
+
 @bot.message_handler(content_types=['sticker'])
 def send_sticker(message):
     bot.reply_to(message, "Great sticker!")
@@ -25,21 +38,3 @@ def echo_all(message):
 
 
 bot.infinity_polling()
-
-# -----
-
-url = 'https://pokeapi.co/api/v2/pokemon/ditto'
-data = requests.get(url).json()
-
-print(data)
-print(data['abilities'][1]['ability']['name'])
-
-with open('data.json') as f:
-    print(json.load(f))
-
-info = {
-    'name': 'Nikolai Andreev',
-    'age': 26,
-}
-
-print(json.dumps(info, indent=2))
