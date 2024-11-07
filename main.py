@@ -28,18 +28,27 @@ def get_books_list(message):
 
 @bot.message_handler(commands=['add'])
 def add_book(message):
+    if message.from_user.id not in users:
+        users[message.from_user.id] = []
+    users[message.from_user.id].append([])
     bot.send_message(message.chat.id, 'Gimme book name')
     bot.register_next_step_handler(message, add_book_name)
 
 
 def add_book_name(message):
-    bot.send_message(message.chat.id, f'Book name: {message.text}')
+    book_name = message.text
+    users[message.from_user.id][-1].append(book_name)
+
+    bot.send_message(message.chat.id, f'Book name: {book_name}')
     bot.send_message(message.chat.id, 'Gimme authors list')
     bot.register_next_step_handler(message, add_book_authors)
 
 
 def add_book_authors(message):
-    bot.send_message(message.chat.id, f'Book authors: {message.text}')
+    authors = message.text
+    users[message.from_user.id][-1].append(authors)
+
+    bot.send_message(message.chat.id, f'Book authors: {authors}')
     bot.send_message(message.chat.id, 'Successfully added!')
 
 
