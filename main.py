@@ -3,6 +3,8 @@ import telebot
 import dotenv
 import os
 
+from telebot.types import InlineKeyboardMarkup, InlineKeyboardButton
+
 dotenv.load_dotenv()
 TOKEN = os.getenv('TOKEN')
 
@@ -31,6 +33,39 @@ def add_book(message):
     if message.from_user.id not in users:
         users[message.from_user.id] = []
     users[message.from_user.id].append([])
+
+    keyboard = InlineKeyboardMarkup(row_width=2)
+    keyboard.add(
+        InlineKeyboardButton('By info', callback_data='add_by_info'),
+        InlineKeyboardButton('By ISBN', callback_data='add_by_isbn'),
+    )
+
+    bot.send_message(message.chat.id, 'How you want to add your book?', reply_markup=keyboard)
+
+
+@bot.callback_query_handler(func=lambda call: True)
+def proceed_callback(call):
+    bot.edit_message_reply_markup(call.message.chat.id, call.message.id)
+    if call.data == 'add_by_info':
+        add_book_by_info(call.message)
+    elif call.data == 'add_by_isbn':
+        add_book_by_isbn(call.message)
+
+
+def add_book_by_isbn(message):
+    bot.send_message(message.chat.id, 'Gimme ISBN')
+    bot.register_next_step_handler(message, add_book_isbn)
+
+
+def add_book_isbn(message):
+    isbn = message.text
+    users[message.from_user.id][-1].append(isbn)
+
+    bot.send_message(message.chat.id, f'Book ISBN: {isbn}')
+    bot.send_message(message.chat.id, 'Successfully added!')
+
+
+def add_book_by_info(message):
     bot.send_message(message.chat.id, 'Gimme book name')
     bot.register_next_step_handler(message, add_book_name)
 
