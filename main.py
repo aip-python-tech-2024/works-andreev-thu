@@ -6,11 +6,24 @@ import os
 dotenv.load_dotenv()
 TOKEN = os.getenv('TOKEN')
 
+users = {}
+
 bot = telebot.TeleBot(TOKEN, parse_mode=None)
 
 @bot.message_handler(commands=['start', 'help'])
 def send_welcome(message):
     bot.reply_to(message, "Howdy, how are you doing?")
+
+
+@bot.message_handler(commands=['list'])
+def get_books_list(message):
+    if message.from_user.id not in users or not users[message.from_user.id]:
+        bot.send_message(message.chat.id, 'You don\'t have any books yet, but you can /add them')
+        return
+
+    books = users[message.from_user.id]
+    reply = '\n\n'.join([f'{title}\n{authors}' for title, authors in books])
+    bot.send_message(message.chat.id, reply)
 
 
 @bot.message_handler(commands=['add'])
