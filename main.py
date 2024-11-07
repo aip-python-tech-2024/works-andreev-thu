@@ -13,6 +13,23 @@ def send_welcome(message):
     bot.reply_to(message, "Howdy, how are you doing?")
 
 
+@bot.message_handler(commands=['add'])
+def add_book(message):
+    bot.send_message(message.chat.id, 'Gimme book name')
+    bot.register_next_step_handler(message, add_book_name)
+
+
+def add_book_name(message):
+    bot.send_message(message.chat.id, f'Book name: {message.text}')
+    bot.send_message(message.chat.id, 'Gimme authors list')
+    bot.register_next_step_handler(message, add_book_authors)
+
+
+def add_book_authors(message):
+    bot.send_message(message.chat.id, f'Book authors: {message.text}')
+    bot.send_message(message.chat.id, 'Successfully added!')
+
+
 @bot.message_handler(commands=['pokemon'])
 def get_pokemon(message):
     print(message.text)
@@ -34,7 +51,7 @@ def send_sticker(message):
 
 @bot.message_handler(func=lambda m: True)
 def echo_all(message):
-    bot.reply_to(message, message.text)
+    bot.reply_to(message, 'Unknown message')
 
 
 bot.infinity_polling()
