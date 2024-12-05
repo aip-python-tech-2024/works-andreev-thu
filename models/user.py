@@ -1,10 +1,10 @@
-class User:
-    count = 0
+import json
 
+
+class User:
     def __init__(self, user_id, nickname):
         self.user_id = user_id
         self.nickname = nickname
-        User.count += 1
 
     def __repr__(self):
         return f'User({self.user_id}, {self.nickname})'
@@ -18,38 +18,32 @@ class User:
         print(f'Hello, {self.nickname}')
 
 
-    @staticmethod
-    def test():
-        print('Test')
+    def save(self):
+        data = {
+            'user_id': self.user_id,
+            'nickname': self.nickname,
+        }
+
+        with open(f'../users/{self.user_id}.json', 'w', encoding='utf-8') as file:
+            json.dump(data, file, ensure_ascii=False)
 
 
     @classmethod
-    def print_counter(cls):
-        print(f'Count of users: {cls.count}')
+    def load(cls, user_id):
+        with open(f'../users/{user_id}.json', 'r', encoding='utf-8') as file:
+            data = json.load(file)
+            return cls(data['user_id'], data['nickname'])
 
 
 me = User(123456789, 'Bakasa')
 print(me)
 me.greet()
-
-clone = User(123456789, 'Bakasa')
-print(clone == 8)
-
-# clone = me
-# clone.nickname = 'Dewili'
-# print(clone.nickname)
-#
-# print(me.nickname)
+me.save()
 
 admin = User(1074584521, 'Alex')
-admin.nickname = 'Alex'
 print(admin.nickname)
 admin.greet()
 
-# print(len(dir(int)))
-# print(dir(int))
-
-print([me, admin])
-
-print(User.count)
-User.test()
+another_user = User.load(6416568464)
+print(another_user)
+another_user.greet()
