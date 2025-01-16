@@ -1,3 +1,11 @@
+class InvalidNameError(Exception):
+    pass
+
+
+class NotEnoughBalance(Exception):
+    pass
+
+
 class Passport:
     def __init__(self, serial, number):
         self.__serial = serial
@@ -23,14 +31,12 @@ class Client:
     @name.setter
     def name(self, name):
         if not isinstance(name, str):
-            print('Name must be a string')
-            return
+            raise ValueError('Name must be a string')
 
         name = name.strip()
 
         if name == '':
-            print('Name cannot be empty')
-            return
+            raise InvalidNameError('Name cannot be empty')
 
         self._name = name
 
@@ -39,14 +45,12 @@ class Client:
 
     def set_name(self, name):
         if not isinstance(name, str):
-            print('Name must be a string')
-            return
+            raise ValueError('Name must be a string')
 
         name = name.strip()
 
         if name == '':
-            print('Name cannot be empty')
-            return
+            raise InvalidNameError('Name cannot be empty')
 
         self._name = name
 
@@ -55,18 +59,18 @@ class Client:
 
     def send_to(self, recipient, amount):
         if not isinstance(recipient, Client):
-            print('Recipient is not a Client')
-            return
+            raise ValueError('Recipient is not a Client')
 
         if self._balance >= amount:
             self._balance -= amount
             recipient._balance += amount
+        else:
+            raise NotEnoughBalance('Not enough balance for transaction')
 
     def pay_for_maintenance(self):
         amount = 10
         if self._balance <= amount:
-            print('Not enough money for maintenance')
-            return
+            raise NotEnoughBalance('Not enough money for maintenance')
         self._balance -= amount
 
 
@@ -74,8 +78,7 @@ class VipClient(Client):
     def pay_for_maintenance(self):
         amount = 5
         if self._balance <= amount:
-            print('Not enough money for maintenance')
-            return
+            raise NotEnoughBalance('Not enough money for maintenance')
         self._balance -= amount
 
 
@@ -88,7 +91,10 @@ friend = VipClient('Vasya', 200, friends_passport)
 print(me)
 print(friend)
 
-me.send_to(friend, 50)
+try:
+    me.send_to(friend, 150)
+except NotEnoughBalance as e:
+    print('Not enough balance for operation:', e)
 
 print(me.get_balance())
 print(friend.get_balance())
@@ -100,8 +106,13 @@ me.name += ' Vladimirovich'
 # me.name = me.name + ' Vladimirovich'
 me.set_name(me.get_name() + ' Vladimirovich')
 
-me.name = '            '
-print(me)
+try:
+    me.name = 5
+    print(me)
+except ValueError as e:
+    print('Error while updating client\'s name:', e)
+except InvalidNameError as e:
+    print('Cannot update client\'s name:', e)
 
 me.pay_for_maintenance()
 friend.pay_for_maintenance()
