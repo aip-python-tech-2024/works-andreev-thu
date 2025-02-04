@@ -2,7 +2,7 @@ class InvalidNameError(Exception):
     pass
 
 
-class NotEnoughBalance(Exception):
+class NotEnoughBalanceError(Exception):
     pass
 
 
@@ -65,12 +65,12 @@ class Client:
             self._balance -= amount
             recipient._balance += amount
         else:
-            raise NotEnoughBalance('Not enough balance for transaction')
+            raise NotEnoughBalanceError('Not enough balance for transaction')
 
     def pay_for_maintenance(self):
         amount = 10
         if self._balance <= amount:
-            raise NotEnoughBalance('Not enough money for maintenance')
+            raise NotEnoughBalanceError('Not enough money for maintenance')
         self._balance -= amount
 
 
@@ -78,7 +78,7 @@ class VipClient(Client):
     def pay_for_maintenance(self):
         amount = 5
         if self._balance <= amount:
-            raise NotEnoughBalance('Not enough money for maintenance')
+            raise NotEnoughBalanceError('Not enough money for maintenance')
         self._balance -= amount
 
 
@@ -93,7 +93,7 @@ print(friend)
 
 try:
     me.send_to(friend, 150)
-except NotEnoughBalance as e:
+except NotEnoughBalanceError as e:
     print('Not enough balance for operation:', e)
 
 print(me.get_balance())
