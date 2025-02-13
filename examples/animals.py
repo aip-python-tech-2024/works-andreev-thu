@@ -1,8 +1,10 @@
 class Mammal:
-    def __init__(self, name):
+    name: str
+
+    def __init__(self, name: str):
         self.name = name
 
-    def __repr__(self):
+    def __repr__(self) -> str:
         return f'Mammal(name={self.name})'
 
 
@@ -28,11 +30,11 @@ class Duck:
         print('Quack!')
 
 
-dog = Dog('Шарик', 'Той-терьер')
-cat = Cat('Феликс')
-duck = Duck()
+dog: Dog = Dog('Шарик', 'Той-терьер')
+cat: Cat = Cat('Феликс')
+duck: Duck = Duck()
 
-mammal = Mammal('Bobik')
+mammal: Mammal = Mammal('Bobik')
 print(mammal)
 
 print(dog)
