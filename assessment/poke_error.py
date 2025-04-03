@@ -1,0 +1,2 @@
+class PokemonError(Exception):
+    pass
